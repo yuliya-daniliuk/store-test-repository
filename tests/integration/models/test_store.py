@@ -27,6 +27,7 @@ class StoreTest(BaseTest):
     def test_store_json(self):
         with self.app_context():
             store = StoreModel('test')
+            store.save_to_db()
             expected = {'id': 1,
                 'name': 'test',
                 'items': []
