@@ -1,0 +1,343 @@
+{
+	"info": {
+		"_postman_id": "948e26be-e501-4dbb-9722-25d3ac61f551",
+		"name": "crud store-item",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"postman.clearEnvironmentVariable(\"access_token\");\r",
+							"tests['resp time < 200']= responseTime < 200;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"user created\"] = jsonData.message === 'User created';\r",
+							"tests[\"content type is in resp\"] = postman.getResponseHeader('Content-type');\r",
+							"tests[\"cont type app/json\"] = postman.getResponseHeader('Content-type') === 'application/json';"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Authorization",
+						"value": "JWT",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test2\", \r\n\"password\": \"123asd\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/register",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"token sent\"] = jsonData.access_token;\r",
+							"postman.setEnvironmentVariable(\"access_token\", jsonData.access_token);\r",
+							"tests[\"resp code200\"]= responseCode.code === 200;\r",
+							"\r",
+							"tests[\"body contains token\"]=responseBody.has('access_token');"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"test2\",\r\n \"password\": \"123asd\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/auth",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create store",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"status 201\"] = responseCode.code === 201;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"name  sent\"] = jsonData.name === \"name1\";\r",
+							"tests[\"store id returned\"] = jsonData.id === 1;\r",
+							"tests[\" items sent\"]= responseBody.has(\"items\");\r",
+							"tests[\"items is []\"] = jsonData.items.length === 0;\r",
+							"\r",
+							"postman.setEnvironmentVariable(\"store_id\", jsonData.id);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/store/name1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"store",
+						"name1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "store name",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"status 201\"] = responseCode.code === 200;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"name  sent\"] = jsonData.name === \"name1\";\r",
+							"tests[\" items sent\"]= responseBody.has(\"items\");"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/store/name1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"store",
+						"name1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"status 201\"] = responseCode.code === 201;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"name  sent\"] = jsonData.name === \"test1\";\r",
+							"tests[\" items sent\"]= jsonData.price === \"12\";\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"price\": \"12\", \"store_id\": \"1\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/item/test1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"item",
+						"test1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "item/my_item",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "JWT {{access_token}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{url}}/item/test1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"item",
+						"test1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "stores",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"status 201\"] = responseCode.code === 200;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"name  sent\"] = responseBody.has(\"stores\");\r",
+							"tests[\"id returned\"]= jsonData.stores[0].id === parseInt(environment.store_id);\r",
+							"tests[\"item returned\"] = jsonData.stores[0].items[0].name === \"test1\";\r",
+							"tests[\"price returned\"] = jsonData.stores[0].items[0].price === 12;"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/stores",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"stores"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "items",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/items",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"items"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "{{url}}/item/test1",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/item/test1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"item",
+						"test1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "del store",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"tests[\"status 201\"] = responseCode.code === 200;\r",
+							"var jsonData = JSON.parse(responseBody);\r",
+							"tests[\"name  sent\"] = jsonData.message === 'Store deleted';"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/store/name1",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"store",
+						"name1"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
