@@ -11,7 +11,8 @@ class StoreTest(BaseTest):
 
                 self.assertEqual(req.status_code, 201)
                 self.assertIsNotNone(StoreModel.find_by_name('name'))
-                self.assertDictEqual(json.loads(req.data), {'name':'name', 'items':[]})
+                self.assertDictEqual(json.loads(req.data), {'id': 1,
+                    'name':'name', 'items':[]})
 
     def test_create_duplicate_store(self):
         with self.app() as client:
@@ -39,7 +40,7 @@ class StoreTest(BaseTest):
             with self.app_context():
                 client.post('/store/name')
                 req = client.get('/store/name')
-                self.assertDictEqual(json.loads(req.data), {'name': 'name', 'items':[]})
+                self.assertDictEqual(json.loads(req.data), {'id': 1, 'name': 'name', 'items':[]})
 
     def test_store_not_found(self):
         with self.app() as client:
@@ -55,8 +56,9 @@ class StoreTest(BaseTest):
                 ItemModel('itemtest', 12, 1).save_to_db()
                 req = client.get('/store/teststore')
 
-                self.assertDictEqual(json.loads(req.data), {'name': 'teststore',
-                                                            'items': [{'name':'itemtest', 'price':12}]})
+                self.assertDictEqual(json.loads(req.data), {'id': 1,
+                    'name': 'teststore',
+                                                            'items': [{'name':'itemtest', 'price':12.0}]})
 
     def test_get_store_list_with_items(self):
         with self.app() as client:
@@ -67,9 +69,11 @@ class StoreTest(BaseTest):
 
                 req = client.get('/stores')
 
-                self.assertDictEqual(json.loads(req.data), {'stores': [{'name': 'teststore',
-                                                            'items': [{'name': 'itemtest', 'price': 12}]},
-                                                             {'name': 'testst2', 'items': [] }]
+                self.assertDictEqual(json.loads(req.data), {'stores': [{'id': 1,
+                    'name': 'teststore',
+                                                            'items': [{'name': 'itemtest', 'price': 12.0}]},
+                                                             {'id': 2,
+                                                                 'name': 'testst2', 'items': [] }]
                                                             })
     def test_store_list(self):
         with self.app() as client:
@@ -79,7 +83,9 @@ class StoreTest(BaseTest):
 
                 req = client.get('/stores')
 
-                self.assertDictEqual(json.loads(req.data), {'stores': [{'name': 'teststore',
+                self.assertDictEqual(json.loads(req.data), {'stores': [{'id': 1,
+                    'name': 'teststore',
                                                                         'items': []},
-                                                                       {'name': 'testst2', 'items': []}]
+                                                                       {'id': 2,
+                                                                           'name': 'testst2', 'items': []}]
                                                             })
